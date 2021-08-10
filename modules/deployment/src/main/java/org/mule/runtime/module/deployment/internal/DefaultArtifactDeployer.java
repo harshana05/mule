@@ -27,6 +27,7 @@ import org.mule.runtime.deployment.model.api.DeployableArtifact;
 import org.mule.runtime.deployment.model.api.DeploymentException;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Optional;
 
 import org.mule.runtime.core.api.construct.Flow;
@@ -34,9 +35,9 @@ import org.mule.runtime.core.internal.construct.DefaultFlowBuilder;
 import org.mule.runtime.core.internal.context.FlowStoppedPersistenceListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +45,7 @@ import org.slf4j.LoggerFactory;
 public class DefaultArtifactDeployer<T extends DeployableArtifact> implements ArtifactDeployer<T> {
 
   protected transient final Logger logger = LoggerFactory.getLogger(getClass());
-  private HashMap<String, List<FlowStoppedPersistenceListener>> appsFlowStoppedListeners = new HashMap<>();
+  private final Map<String, List<FlowStoppedPersistenceListener>> appsFlowStoppedListeners = new ConcurrentHashMap<>();
 
   @Override
   public void deploy(T artifact, boolean startArtifact) {
