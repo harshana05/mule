@@ -10,12 +10,11 @@ package org.mule.test.runner.utils;
 import static java.lang.System.getProperty;
 import static org.mule.runtime.api.util.MuleSystemProperties.SYSTEM_PROPERTY_PREFIX;
 import static org.mule.runtime.core.api.util.PropertiesUtils.discoverProperties;
-import static org.springframework.util.ReflectionUtils.findMethod;
 
 import org.mule.test.runner.api.DependencyResolver;
 
+import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.List;
 import java.util.Properties;
@@ -34,17 +33,15 @@ public final class RunnerModuleUtils {
   public static final String EXCLUDED_ARTIFACTS = "excluded.artifacts";
   public static final String EXTRA_BOOT_PACKAGES = "extraBoot.packages";
   public static final String JAR_EXTENSION = "jar";
-
-  // TODO: MULE-19762 remove once forward compatibility is finished
-  private static String DEFAULT_TEST_SDK_API_VERSION_PROPERTY = SYSTEM_PROPERTY_PREFIX + "testSdkApiVersion";
   private static final String SDK_API_GROUP_ID = "org.mule.sdk";
   private static final String SDK_API_ARTIFACT_ID = "mule-sdk-api";
+  // TODO: MULE-19762 remove once forward compatibility is finished
+  private static String DEFAULT_TEST_SDK_API_VERSION_PROPERTY = SYSTEM_PROPERTY_PREFIX + "testSdkApiVersion";
   private static final String DEFAULT_SDK_API_VERSION = getDefaultSdkApiVersionForTest();
   private static final Artifact DEFAULT_SDK_API_ARTIFACT = new DefaultArtifact(SDK_API_GROUP_ID,
                                                                                SDK_API_ARTIFACT_ID,
                                                                                JAR_EXTENSION,
                                                                                DEFAULT_SDK_API_VERSION);
-
 
   private RunnerModuleUtils() {}
 
@@ -92,12 +89,15 @@ public final class RunnerModuleUtils {
             .getArtifact()
             .getFile().getAbsoluteFile().toURL();
 
-        Method method = findMethod(extensionClassLoader.getClass(), "addURL", URL.class);
+        // Method method = findMethod(extensionClassLoader.getClass(), "addURL", URL.class);
+        //
+        // if (method != null) {
+        // method.setAccessible(true);
+        // method.invoke(extensionClassLoader, sdkApiUrl);
+        // }
 
-        if (method != null) {
-          method.setAccessible(true);
-          method.invoke(extensionClassLoader, sdkApiUrl);
-        }
+        JarLoader.addToClassPath(new File(sdkApiUrl.getFile()));
+
       } catch (Exception e) {
         throw new RuntimeException("Could not assure sdk-api in extension classloader", e);
       }
