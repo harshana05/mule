@@ -10,6 +10,7 @@ package org.mule.test.runner.utils;
 import static java.lang.System.getProperty;
 import static org.mule.runtime.api.util.MuleSystemProperties.SYSTEM_PROPERTY_PREFIX;
 import static org.mule.runtime.core.api.util.PropertiesUtils.discoverProperties;
+import static org.mule.test.runner.utils.JarLoader.addToClassPath;
 
 import org.mule.test.runner.api.DependencyResolver;
 
@@ -89,14 +90,7 @@ public final class RunnerModuleUtils {
             .getArtifact()
             .getFile().getAbsoluteFile().toURL();
 
-        // Method method = findMethod(extensionClassLoader.getClass(), "addURL", URL.class);
-        //
-        // if (method != null) {
-        // method.setAccessible(true);
-        // method.invoke(extensionClassLoader, sdkApiUrl);
-        // }
-
-        JarLoader.addToClassPath(new File(sdkApiUrl.getFile()));
+        addToClassPath(new File(sdkApiUrl.getFile()));
 
       } catch (Exception e) {
         throw new RuntimeException("Could not assure sdk-api in extension classloader", e);
